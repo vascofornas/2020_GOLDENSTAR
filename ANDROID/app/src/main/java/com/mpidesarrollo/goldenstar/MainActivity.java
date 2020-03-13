@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import java.util.List;
@@ -53,7 +54,8 @@ public class MainActivity extends AppCompatActivity {
             public void onResponse(Call<LoginRequest> call, Response<LoginRequest> response) {
 
 
-                Log.d("ESTOY EN LOGIN REQUEST","ESTOY EN LOGIN REQUEST "+response);
+                Log.d("ESTOY EN LOGIN REQUEST","ESTOY EN LOGIN REQUEST rsponse "+response);
+
 
                 if (!response.isSuccessful()) {
                     textViewResult.setText("Code: " + response.code());
@@ -69,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
 
 
                     textViewResult.append(content);
+
                 }
 
             }
