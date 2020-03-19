@@ -8,9 +8,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import java.io.IOException;
 import java.util.List;
 
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -22,6 +24,12 @@ public class MainActivity extends AppCompatActivity {
     private TextView textViewResult;
     JsonPlaceHolderApi jsonPlaceHolderApi;
 
+    public static Retrofit retrofit = new Retrofit.Builder()
+            .baseUrl("http://10.128.0.2:5000/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build();
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,10 +38,7 @@ public class MainActivity extends AppCompatActivity {
 
         textViewResult = findViewById(R.id.text_view_result);
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://10.128.0.2:5000/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
+
 
         jsonPlaceHolderApi = retrofit.create(JsonPlaceHolderApi.class);
 
@@ -42,47 +47,47 @@ public class MainActivity extends AppCompatActivity {
         
 
     }
-    private void login_Request(){
+    private void login_Request() {
 
 
-        Log.d("ESTOY EN LOGIN REQUEST","ESTOY EN LOGIN REQUEST");
-        LoginRequest loginRequest = new LoginRequest("HALEJANDRO","ALEJANDR0123","password","19.3509","-99.1566");
+        Log.d("ESTOY EN LOGIN REQUEST", "ESTOY EN LOGIN REQUEST");
 
-        Call <LoginRequest> call = jsonPlaceHolderApi.createLoginReques(loginRequest);
-        call.enqueue(new Callback<LoginRequest>() {
+        JsonPlaceHolderApi jsonPlaceHolderApi = retrofit.create(JsonPlaceHolderApi.class);
+
+
+        Call<ResponseBody> call = jsonPlaceHolderApi.createLoginRequest("HALEJANDRO", "ALEJANDR0123", "password", "19.4953148", "-99.1131595");
+
+        call.enqueue(new Callback<ResponseBody>() {
             @Override
-            public void onResponse(Call<LoginRequest> call, Response<LoginRequest> response) {
-
-
-                Log.d("ESTOY EN LOGIN REQUEST","ESTOY EN LOGIN REQUEST rsponse "+response);
-
-
-                if (!response.isSuccessful()) {
-                    textViewResult.setText("Code: " + response.code());
-                    return;
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                Log.d("ESTOY EN LOGIN REQUEST", "ESTOY EN LOGIN REQUEST success "+response);
+                String object = null;
+                try {
+                    object = response.body().string();
+                    try {
+                        textViewResult.setText(response.body().string());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
+                Log.d("response string.....", object);
 
-                List<Login> login = (List<Login>) response.body();
-
-                for (Login loginResponse : login ){
-                    String content = "";
-                    content += "Access Token: " + loginResponse.getAccess_topken() + "\n";
-                    content += "Token Type: " + loginResponse.getToken_type() + "\n";
+                Log.d("response string.....", object);
 
 
-                    textViewResult.append(content);
-
-                }
 
             }
 
             @Override
-            public void onFailure(Call<LoginRequest> call, Throwable t) {
-
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.d("ESTOY EN LOGIN REQUEST", "ESTOY EN LOGIN REQUEST error");
             }
         });
-    }
 
+
+    }
 
 
 
